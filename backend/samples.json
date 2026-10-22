@@ -1,0 +1,36 @@
+{
+  "_comment": "Synthetic receipts shared by seed.py (matching card charges) and render_receipts.py (images bundled in the app). day_offset is days before today.",
+  "receipts": [
+    {
+      "file": "joes_pizza.png", "merchant": "JOE'S PIZZA", "day_offset": 2, "time": "7:42 PM",
+      "address": ["1842 Valencia St", "San Francisco, CA 94110", "(415) 555-0142"],
+      "items": [["2 Large Margherita", 3600]], "tax": 315, "tip_line": 700,
+      "charge": { "descriptor": "SQ *JOES PIZZA #12 SAN FRANCISCO CA", "cents": 4615, "day_offset": 1 }
+    },
+    {
+      "file": "blue_bottle.png", "merchant": "Blue Bottle Coffee", "day_offset": 1, "time": "8:15 AM",
+      "address": ["66 Mint St", "San Francisco, CA 94103"],
+      "items": [["Cappuccino", 550], ["Pastry", 100]], "tax": 0,
+      "charge": { "descriptor": "TST* BLUE BOTTLE COFFEE 0042", "cents": 650, "day_offset": 1 }
+    },
+    {
+      "file": "harbor_hardware.png", "merchant": "HARBOR HARDWARE", "day_offset": 3, "time": "11:05 AM",
+      "address": ["410 Embarcadero W", "Oakland, CA 94607"],
+      "items": [["Cordless drill kit", 18999], ["Shelving units x4", 87996], ["Anchors & screws", 3455]], "tax": 10000,
+      "split_total": true,
+      "charge": { "descriptor": "HARBOR HARDWARE #301 OAKLAND CA", "cents": 120450, "day_offset": 3 }
+    },
+    {
+      "file": "luna_taqueria.png", "merchant": "LUNA TAQUERIA", "day_offset": 1, "time": "1:20 PM",
+      "address": ["2930 24th St", "San Francisco, CA 94110"],
+      "items": [["Burrito plate x2", 2600]], "tax": 240,
+      "charge": { "descriptor": "SQ *LUNA TAQUERIA", "cents": 3340, "day_offset": 1 },
+      "decoys": [{ "descriptor": "SQ *LUNA TAQUERIA", "cents": 3240, "day_offset": 1 }]
+    },
+    {
+      "file": "bayside_parking.png", "merchant": "BAYSIDE PARKING", "day_offset": 2, "time": "6:02 PM",
+      "address": ["Pier 27", "San Francisco, CA 94111"],
+      "items": [["Event parking", 1800]], "tax": 0
+    }
+  ]
+}

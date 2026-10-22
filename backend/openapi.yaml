@@ -1,0 +1,152 @@
+openapi: 3.0.3
+info:
+  title: Receipt Snap mock API
+  version: 1.0.0
+  description: >
+    Source of truth for the app's network layer (core/data/.../network/ReceiptSnapApi.kt
+    is hand-written to match it). Served by backend/app.py. Not affiliated with Ramp.
+servers:
+  - url: http://10.0.2.2:8000
+    description: Flask mock as seen from the Android emulator
+paths:
+  /transactions:
+    get:
+      summary: Card transactions updated since a cursor, paged
+      parameters:
+        - { name: updated_since, in: query, schema: { type: string, format: date-time } }
+        - { name: page_token, in: query, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, default: 100, maximum: 500 } }
+      responses:
+        '200':
+          description: A page of transactions
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [transactions]
+                properties:
+                  transactions: { type: array, items: { $ref: '#/components/schemas/Transaction' } }
+                  next_page_token: { type: string, nullable: true }
+  /receipts:
+    post:
+      summary: Upload a receipt image with its extraction and proposed match
+      parameters:
+        - { name: Idempotency-Key, in: header, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [metadata, image]
+              properties:
+                metadata: { $ref: '#/components/schemas/ReceiptUpload' }
+                image: { type: string, format: binary }
+      responses:
+        '200':
+          description: Stored (or replayed for a repeated Idempotency-Key)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ReceiptUploadResult' }
+        '400': { description: Missing key or malformed body }
+  /receipts/{id}/match:
+    post:
+      summary: Confirm or change the transaction a receipt belongs to
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: Idempotency-Key, in: header, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transaction_id: { type: string, nullable: true }
+      responses:
+        '200': { description: Match stored, content: { application/json: { schema: { $ref: '#/components/schemas/MatchOutcome' } } } }
+        '404': { description: Unknown receipt }
+  /approvals:
+    get:
+      summary: Approval requests for the current user
+      responses:
+        '200':
+          description: Approvals
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  approvals: { type: array, items: { $ref: '#/components/schemas/Approval' } }
+  /approvals/{id}/decision:
+    post:
+      summary: Approve or deny; 409 if someone else already decided
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: Idempotency-Key, in: header, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision, client_version]
+              properties:
+                decision: { type: string, enum: [APPROVE, DENY] }
+                client_version: { type: integer }
+      responses:
+        '200': { description: Decision stored, content: { application/json: { schema: { $ref: '#/components/schemas/Approval' } } } }
+        '409':
+          description: Already decided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string }
+                  decided_by: { type: string }
+                  status: { type: string }
+components:
+  schemas:
+    Transaction:
+      type: object
+      required: [id, merchant_descriptor, amount_cents, currency, authorized_at, card_last4, updated_at]
+      properties:
+        id: { type: string }
+        merchant_descriptor: { type: string, example: 'SQ *JOES PIZZA #12 SAN FRANCISCO CA' }
+        amount_cents: { type: integer, format: int64 }
+        currency: { type: string, example: USD }
+        authorized_at: { type: string, format: date-time }
+        card_last4: { type: string }
+        receipt_id: { type: string, nullable: true }
+        updated_at: { type: string, format: date-time }
+    ReceiptUpload:
+      type: object
+      required: [id]
+      properties:
+        id: { type: string, description: Client-generated UUID }
+        merchant: { type: string, nullable: true }
+        total_cents: { type: integer, format: int64, nullable: true }
+        date: { type: string, format: date, nullable: true }
+        proposed_transaction_id: { type: string, nullable: true }
+    MatchOutcome:
+      type: object
+      properties:
+        transaction_id: { type: string, nullable: true }
+        status: { type: string, enum: [ACCEPTED, REJECTED, NONE] }
+        reason: { type: string, nullable: true }
+    ReceiptUploadResult:
+      type: object
+      properties:
+        receipt_id: { type: string }
+        remote_id: { type: string }
+        match: { $ref: '#/components/schemas/MatchOutcome' }
+    Approval:
+      type: object
+      properties:
+        id: { type: string }
+        requester_name: { type: string }
+        amount_cents: { type: integer, format: int64 }
+        merchant: { type: string }
+        memo: { type: string }
+        status: { type: string, enum: [PENDING, APPROVED, DENIED] }
+        version: { type: integer }
+        decided_by: { type: string, nullable: true }
