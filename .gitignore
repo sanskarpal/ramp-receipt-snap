@@ -1,0 +1,13 @@
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+.DS_Store
+captures/
+.kotlin/
+# private research, outreach drafts and interview prep; never publish
+.forge/
+backend/__pycache__/
+backend/*.db
+env.sh
