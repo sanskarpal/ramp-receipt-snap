@@ -1,0 +1,39 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Unit tests (parser, matcher, sync engine incl. chaos)
+        run: ./gradlew test --console=plain
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug --console=plain
+      - uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install flask pillow
+      - name: Seed and smoke-test the mock API
+        run: |
+          python3 backend/seed.py
+          python3 backend/app.py & sleep 2
+          curl -sf "localhost:8000/transactions?limit=1"
+          K=$(uuidgen)
+          for i in 1 2; do curl -sf -X POST localhost:8000/receipts -H "Idempotency-Key: $K" -F 'metadata={"id":"r1"}' -F image=@README.md; done
+          curl -s localhost:8000/admin/stats | python3 -c "import json,sys; d=json.load(sys.stdin); assert d['receipts']==1, d; print('idempotent replay OK')"
