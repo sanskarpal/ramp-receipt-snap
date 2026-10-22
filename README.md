@@ -2,7 +2,7 @@
 
 Snap a receipt on an Android phone, read it on the device, match it to the card charge with no network, and sync it later without ever losing or duplicating it. A portfolio project built by Sanskar Pal while applying for Ramp's Android engineering role. Not affiliated with or endorsed by Ramp; all data is fictional.
 
-**Stack:** Kotlin · Jetpack Compose (Material 3) · MVVM + StateFlow · Hilt · Room · WorkManager · CameraX · ML Kit Text Recognition v2 (on-device, bundled) · Retrofit/OkHttp + kotlinx.serialization · Flask mock API
+**Download:** [APK on the v0.1.0 release](https://github.com/sanskarpal/ramp-receipt-snap/releases/tag/v0.1.0) · **Stack:** Kotlin · Jetpack Compose (Material 3) · MVVM + StateFlow · Hilt · Room · WorkManager · CameraX · ML Kit Text Recognition v2 (on-device, bundled) · Retrofit/OkHttp + kotlinx.serialization · Flask mock API
 
 <p>
   <img src="docs/demo.gif" width="270" alt="Offline capture, auto-match, offline approvals, reconnect and sync" />
@@ -101,7 +101,7 @@ curl -X POST localhost:8000/admin/chaos -H 'content-type: application/json' -d '
 bash scripts/chaos_e2e.sh            # end-to-end run on a connected emulator
 ```
 
-A debug-signed APK is attached to the GitHub release. Ramp uses Buildkite for CI; this repo uses GitHub Actions for the same build, test and lint steps.
+A debug-signed APK is attached to the [v0.1.0 release](https://github.com/sanskarpal/ramp-receipt-snap/releases/tag/v0.1.0). Ramp uses Buildkite for CI; this repo uses GitHub Actions for the same build, test and lint steps.
 
 ## What I'd do next at Ramp's scale
 
