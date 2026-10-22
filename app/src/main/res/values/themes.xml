@@ -1,0 +1,5 @@
+<resources>
+    <style name="Theme.ReceiptSnap" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#F4F2F0</item>
+    </style>
+</resources>

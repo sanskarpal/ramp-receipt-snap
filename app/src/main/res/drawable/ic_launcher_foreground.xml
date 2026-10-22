@@ -1,0 +1,7 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- a receipt with a check mark -->
+    <path android:fillColor="#0C0A08" android:pathData="M38,28h32v52l-4,-3l-4,3l-4,-3l-4,3l-4,-3l-4,3l-4,-3l-4,3z" />
+    <path android:strokeColor="#E4F222" android:strokeWidth="5" android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M45,55l6,6l12,-14" />
+</vector>
